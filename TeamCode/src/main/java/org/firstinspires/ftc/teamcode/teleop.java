@@ -27,21 +27,19 @@ public class teleop extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
-        DcMotor leftIntakeMotor = hardwareMap.dcMotor.get("leftIntakeMotor");
-        DcMotor rightIntakeMotor = hardwareMap.dcMotor.get("rightIntakeMotor");
-        DcMotor armMotor = hardwareMap.dcMotor.get("armMotor");
-        CRServo sungSungSungServo = hardwareMap.crservo.get("evan");
+        DcMotor intakeMotor = hardwareMap.dcMotor.get("raymond");
+        CRServo intake1 = hardwareMap.crservo.get("evan");
+        CRServo intake2 = hardwareMap.crservo.get("veer");
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
         // See the note about this earlier on this page.
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
 
@@ -77,57 +75,42 @@ public class teleop extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            // for arm rotation
-            if (gamepad2.left_stick_y > 0) {
-                armMotor.setPower(0.4 * gamepad2.left_stick_y);
-            } else if (gamepad2.left_stick_y < 0) {
-                armMotor.setPower(0.4 * gamepad2.left_stick_y);
-            } else {
-                armMotor.setPower(0.1);
-            }
 
             // intake
             if (currentGamepad2.a && !previousGamepad2.a) {
-                leftIntakeMotor.setPower(0.3);
-                rightIntakeMotor.setPower(-0.3);
+                intakeMotor.setPower(-1);
             }
 
             // stop intake/outtake
             if (currentGamepad2.b && !previousGamepad1.b) {
-                leftIntakeMotor.setPower(0);
-                rightIntakeMotor.setPower(0);
-            }
-
-            // start outtake
-            if (currentGamepad2.x && !previousGamepad1.x) {
-                leftIntakeMotor.setPower(-0.48);
-                rightIntakeMotor.setPower(0.48);
-
+                intakeMotor.setPower(0);
             }
 
             // Move spindexer down one slot
             if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left) {
-                sungSungSungServo.setPower(0.28);
-                sleep(300);
-                sungSungSungServo.setPower(0);
+                intake1.setPower(-1);
+                intake2.setPower(1);
             }
 
             // Move spindexer up one slot
             if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right) {
-                sungSungSungServo.setPower(-0.28);
-                sleep(300);
-                sungSungSungServo.setPower(0);
+                intake1.setPower(0);
+                intake2.setPower(0);
             }
 
             // rotate spindexer down
-            sungSungSungServo.setPower(0.3 * gamepad2.left_trigger);
+            if (gamepad2.left_trigger > 0) {
+                intakeMotor.setPower(-gamepad2.left_trigger);
+            }
 
             // rotate spindexer up
-            sungSungSungServo.setPower(-0.3 * gamepad2.right_trigger);
+            if (gamepad2.right_trigger > 0) {
+                intakeMotor.setPower(gamepad2.right_trigger);
+            }
 
 
             frontLeftMotor.setPower(frontLeftPower);
-            backLeftMotor.setPower(-backLeftPower);
+            backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
         }
